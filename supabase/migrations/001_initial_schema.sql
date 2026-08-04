@@ -21,10 +21,12 @@ CREATE TABLE IF NOT EXISTS profiles (
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
 -- Profiles policies
+DROP POLICY IF EXISTS "Users can view their own profile" ON profiles;
 CREATE POLICY "Users can view their own profile"
   ON profiles FOR SELECT
   USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update their own profile" ON profiles;
 CREATE POLICY "Users can update their own profile"
   ON profiles FOR UPDATE
   USING (auth.uid() = id);
@@ -46,6 +48,9 @@ CREATE TABLE IF NOT EXISTS requests (
 );
 
 -- Create indexes for better query performance
+DROP INDEX IF EXISTS idx_requests_user_id;
+DROP INDEX IF EXISTS idx_requests_status;
+DROP INDEX IF EXISTS idx_requests_created_at;
 CREATE INDEX idx_requests_user_id ON requests(user_id);
 CREATE INDEX idx_requests_status ON requests(status);
 CREATE INDEX idx_requests_created_at ON requests(created_at DESC);
@@ -54,18 +59,22 @@ CREATE INDEX idx_requests_created_at ON requests(created_at DESC);
 ALTER TABLE requests ENABLE ROW LEVEL SECURITY;
 
 -- Requests policies
+DROP POLICY IF EXISTS "Users can view their own requests" ON requests;
 CREATE POLICY "Users can view their own requests"
   ON requests FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create their own requests" ON requests;
 CREATE POLICY "Users can create their own requests"
   ON requests FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own requests" ON requests;
 CREATE POLICY "Users can update their own requests"
   ON requests FOR UPDATE
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own requests" ON requests;
 CREATE POLICY "Users can delete their own requests"
   ON requests FOR DELETE
   USING (auth.uid() = user_id);
@@ -86,12 +95,14 @@ CREATE TABLE IF NOT EXISTS analyses (
 );
 
 -- Create index for better query performance
+DROP INDEX IF EXISTS idx_analyses_request_id;
 CREATE INDEX idx_analyses_request_id ON analyses(request_id);
 
 -- Enable RLS on analyses
 ALTER TABLE analyses ENABLE ROW LEVEL SECURITY;
 
 -- Analyses policies (users can only see analyses for their own requests)
+DROP POLICY IF EXISTS "Users can view analyses for their own requests" ON analyses;
 CREATE POLICY "Users can view analyses for their own requests"
   ON analyses FOR SELECT
   USING (
@@ -118,12 +129,14 @@ CREATE TABLE IF NOT EXISTS briefs (
 );
 
 -- Create index for better query performance
+DROP INDEX IF EXISTS idx_briefs_request_id;
 CREATE INDEX idx_briefs_request_id ON briefs(request_id);
 
 -- Enable RLS on briefs
 ALTER TABLE briefs ENABLE ROW LEVEL SECURITY;
 
 -- Briefs policies (users can only see briefs for their own requests)
+DROP POLICY IF EXISTS "Users can view briefs for their own requests" ON briefs;
 CREATE POLICY "Users can view briefs for their own requests"
   ON briefs FOR SELECT
   USING (
@@ -147,12 +160,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger for profiles table
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
 CREATE TRIGGER update_profiles_updated_at
   BEFORE UPDATE ON profiles
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
 -- Trigger for requests table
+DROP TRIGGER IF EXISTS update_requests_updated_at ON requests;
 CREATE TRIGGER update_requests_updated_at
   BEFORE UPDATE ON requests
   FOR EACH ROW
