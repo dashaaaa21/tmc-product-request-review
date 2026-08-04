@@ -36,7 +36,8 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname === "/" ||
     request.nextUrl.pathname.startsWith("/dashboard") ||
     request.nextUrl.pathname.startsWith("/requests") ||
-    request.nextUrl.pathname.startsWith("/history");
+    request.nextUrl.pathname.startsWith("/history") ||
+    request.nextUrl.pathname.startsWith("/brief");
 
   // Redirect to login if accessing protected page without auth
   if (!user && isProtectedPage) {
