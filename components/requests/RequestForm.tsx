@@ -12,6 +12,7 @@ export function RequestForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +36,32 @@ export function RequestForm() {
       }
 
       setSuccess(true);
+      
+      // Call AI analysis
+      setAnalyzing(true);
+      try {
+        const analysisResponse = await fetch("/api/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ 
+            requestId: data.data.id,
+            requestText: request 
+          }),
+        });
+
+        if (!analysisResponse.ok) {
+          const analysisData = await analysisResponse.json();
+          throw new Error(analysisData.error || "Failed to analyze request");
+        }
+      } catch (analysisErr) {
+        // Analysis failed, but request was created successfully
+        // Could show a warning to the user if needed
+      } finally {
+        setAnalyzing(false);
+      }
+
       setRequest("");
       
       setTimeout(() => {
@@ -89,10 +116,10 @@ export function RequestForm() {
 
           <Button
             type="submit"
-            disabled={loading || !request.trim()}
+            disabled={loading || analyzing || !request.trim()}
             className="w-full"
           >
-            {loading ? "Creating..." : "Analyze Request"}
+            {loading ? "Creating..." : analyzing ? "Analyzing..." : "Analyze Request"}
           </Button>
         </form>
       </CardContent>
