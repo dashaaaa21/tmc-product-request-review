@@ -1,23 +1,50 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function RequestForm() {
+  const router = useRouter();
   const [request, setRequest] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setSuccess(false);
     setLoading(true);
-    
-    console.log("Product Request:", request);
-    
-    setTimeout(() => {
+
+    try {
+      const response = await fetch("/api/requests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ requestText: request }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create request");
+      }
+
+      setSuccess(true);
+      setRequest("");
+      
+      setTimeout(() => {
+        router.push("/history");
+      }, 1500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -48,12 +75,24 @@ export function RequestForm() {
             />
           </div>
 
+          {error && (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 px-4 py-3 rounded-lg text-sm">
+              Request created successfully! Redirecting to history...
+            </div>
+          )}
+
           <Button
             type="submit"
             disabled={loading || !request.trim()}
             className="w-full"
           >
-            {loading ? "Analyzing..." : "Analyze Request"}
+            {loading ? "Creating..." : "Analyze Request"}
           </Button>
         </form>
       </CardContent>
