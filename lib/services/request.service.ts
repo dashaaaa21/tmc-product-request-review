@@ -9,7 +9,10 @@ export class RequestService {
       .from("requests")
       .insert({
         user_id: userId,
-        request_text: requestText,
+        title: "Product Request",
+        description: requestText,
+        category: "merchandise",
+        priority: "medium",
         status: "pending",
       })
       .select()

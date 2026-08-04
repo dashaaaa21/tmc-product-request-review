@@ -5,10 +5,11 @@ export interface CreateRequestInput {
 export interface ProductRequest {
   id: string;
   user_id: string;
-  request_text: string;
-  status: "pending" | "analyzing" | "completed" | "failed";
-  category: string | null;
-  priority: string | null;
+  title: string;
+  description: string;
+  status: "pending" | "approved" | "rejected" | "implemented";
+  category: string;
+  priority: "low" | "medium" | "high";
   created_at: string;
   updated_at: string;
 }
