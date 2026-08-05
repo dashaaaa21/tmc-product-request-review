@@ -131,11 +131,10 @@ CREATE POLICY "Users can create analyses for their own requests"
 CREATE TABLE IF NOT EXISTS briefs (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   request_id UUID NOT NULL REFERENCES requests(id) ON DELETE CASCADE,
-  brief_text TEXT NOT NULL,
-  objectives JSONB,
-  success_metrics JSONB,
-  requirements JSONB,
-  timeline_estimate TEXT,
+  facts JSONB,
+  assumptions JSONB,
+  unknowns JSONB,
+  final_brief TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -146,11 +145,22 @@ CREATE INDEX idx_briefs_request_id ON briefs(request_id);
 -- Enable RLS on briefs
 ALTER TABLE briefs ENABLE ROW LEVEL SECURITY;
 
--- Briefs policies (users can only see briefs for their own requests)
+-- Briefs policies
 DROP POLICY IF EXISTS "Users can view briefs for their own requests" ON briefs;
 CREATE POLICY "Users can view briefs for their own requests"
   ON briefs FOR SELECT
   USING (
+    EXISTS (
+      SELECT 1 FROM requests
+      WHERE requests.id = briefs.request_id
+      AND requests.user_id = auth.uid()
+    )
+  );
+
+DROP POLICY IF EXISTS "Users can create briefs for their own requests" ON briefs;
+CREATE POLICY "Users can create briefs for their own requests"
+  ON briefs FOR INSERT
+  WITH CHECK (
     EXISTS (
       SELECT 1 FROM requests
       WHERE requests.id = briefs.request_id
