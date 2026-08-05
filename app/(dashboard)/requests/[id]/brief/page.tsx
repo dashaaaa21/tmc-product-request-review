@@ -2,34 +2,34 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ReviewSection } from "@/components/requests/ReviewSection";
+import { BriefSection } from "@/components/requests/BriefSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { AnalysisResult } from "@/types/analysis.types";
+import { BriefResult } from "@/types/brief.types";
 import { ProductRequest } from "@/types/request.types";
 
-export default function ReviewPage() {
+export default function BriefPage() {
   const params = useParams();
   const router = useRouter();
   const requestId = params.id as string;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [request, setRequest] = useState<ProductRequest | null>(null);
-  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
-  const [generating, setGenerating] = useState(false);
+  const [brief, setBrief] = useState<BriefResult | null>(null);
 
   useEffect(() => {
-    async function fetchAnalysis() {
+    async function fetchBrief() {
       try {
-        const response = await fetch(`/api/requests/${requestId}/analysis`);
+        // Fetch brief from database
+        const response = await fetch(`/api/requests/${requestId}/brief`);
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch analysis");
+          throw new Error(data.error || "Failed to fetch brief");
         }
 
         setRequest(data.data.request);
-        setAnalysis(data.data.analysis);
+        setBrief(data.data.brief);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
@@ -37,36 +37,8 @@ export default function ReviewPage() {
       }
     }
 
-    fetchAnalysis();
+    fetchBrief();
   }, [requestId]);
-
-  const handleGenerateBrief = async () => {
-    setGenerating(true);
-    setError(null);
-
-    try {
-      const response = await fetch("/api/brief", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ requestId }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to generate brief");
-      }
-
-      // Success - go to brief page
-      router.push(`/requests/${requestId}/brief`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setGenerating(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -75,7 +47,7 @@ export default function ReviewPage() {
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-gray-100 mx-auto mb-4"></div>
             <p className="text-gray-600 dark:text-gray-400">
-              Loading analysis...
+              Loading brief...
             </p>
           </div>
         </div>
@@ -90,8 +62,8 @@ export default function ReviewPage() {
           <CardContent className="pt-6">
             <div className="text-center py-8">
               <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-              <Button onClick={() => router.push("/requests")}>
-                Back to Requests
+              <Button onClick={() => router.push(`/requests/${requestId}/review`)}>
+                Back to Review
               </Button>
             </div>
           </CardContent>
@@ -100,17 +72,17 @@ export default function ReviewPage() {
     );
   }
 
-  if (!analysis) {
+  if (!brief) {
     return (
       <div className="max-w-4xl mx-auto">
         <Card>
           <CardContent className="pt-6">
             <div className="text-center py-8">
               <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Analysis not available yet.
+                Brief not available yet.
               </p>
-              <Button onClick={() => router.push("/requests")}>
-                Back to Requests
+              <Button onClick={() => router.push(`/requests/${requestId}/review`)}>
+                Back to Review
               </Button>
             </div>
           </CardContent>
@@ -130,10 +102,10 @@ export default function ReviewPage() {
           ← Back to History
         </Button>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Request Review
+          Product Brief
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          AI analysis of your merchandise request
+          Complete product brief generated from your request
         </p>
         {request && (
           <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -147,18 +119,7 @@ export default function ReviewPage() {
         )}
       </div>
 
-      <ReviewSection analysis={analysis} />
-
-      <div className="mt-8 flex justify-center">
-        <Button
-          onClick={handleGenerateBrief}
-          disabled={generating}
-          size="lg"
-          className="px-8"
-        >
-          {generating ? "Generating Brief..." : "Generate Product Brief"}
-        </Button>
-      </div>
+      <BriefSection brief={brief} />
     </div>
   );
 }
