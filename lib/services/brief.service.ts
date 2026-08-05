@@ -44,7 +44,7 @@ export class BriefService {
     return parsed;
   }
 
-  // Save brief and update request status in one operation
+  // Save brief and update request status (two separate DB operations)
   static async save(requestId: string, brief: BriefResult): Promise<void> {
     const supabase = await createClient();
 
@@ -69,7 +69,8 @@ export class BriefService {
       .eq("id", requestId);
 
     if (statusError) {
-      throw new Error("Failed to update request status");
+      console.error("Request status update error details:", statusError);
+      throw new Error(`Failed to update request status: ${statusError.message}`);
     }
   }
 
