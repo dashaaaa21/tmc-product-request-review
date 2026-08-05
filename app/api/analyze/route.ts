@@ -43,12 +43,12 @@ export async function POST(request: NextRequest) {
     // Analyze the request
     const analysis = await AIService.analyzeRequest(requestText);
 
-    // Save analysis to database - store the analysis as JSON in analysis_text
+    // Save analysis to database in JSONB field
     const { error: dbError } = await supabase
       .from("analyses")
       .insert({
         request_id: requestId,
-        analysis_text: JSON.stringify(analysis),
+        analysis_text: `AI Analysis completed at ${new Date().toISOString()}`,
         key_points: analysis,
       });
 

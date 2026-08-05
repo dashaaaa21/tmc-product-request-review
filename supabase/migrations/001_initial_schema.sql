@@ -101,11 +101,22 @@ CREATE INDEX idx_analyses_request_id ON analyses(request_id);
 -- Enable RLS on analyses
 ALTER TABLE analyses ENABLE ROW LEVEL SECURITY;
 
--- Analyses policies (users can only see analyses for their own requests)
+-- Analyses policies
 DROP POLICY IF EXISTS "Users can view analyses for their own requests" ON analyses;
 CREATE POLICY "Users can view analyses for their own requests"
   ON analyses FOR SELECT
   USING (
+    EXISTS (
+      SELECT 1 FROM requests
+      WHERE requests.id = analyses.request_id
+      AND requests.user_id = auth.uid()
+    )
+  );
+
+DROP POLICY IF EXISTS "Users can create analyses for their own requests" ON analyses;
+CREATE POLICY "Users can create analyses for their own requests"
+  ON analyses FOR INSERT
+  WITH CHECK (
     EXISTS (
       SELECT 1 FROM requests
       WHERE requests.id = analyses.request_id

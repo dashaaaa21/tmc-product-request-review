@@ -37,7 +37,7 @@ export function RequestForm() {
 
       setSuccess(true);
       
-      // Call AI analysis
+      // Run AI analysis
       setAnalyzing(true);
       try {
         const analysisResponse = await fetch("/api/analyze", {
@@ -53,20 +53,21 @@ export function RequestForm() {
 
         if (!analysisResponse.ok) {
           const analysisData = await analysisResponse.json();
-          throw new Error(analysisData.error || "Failed to analyze request");
+          console.error("Analysis failed:", analysisData.error);
+          setError("Request created, but analysis failed. You can retry later.");
+          return;
         }
+        
+        // Success - go to review page
+        router.push(`/requests/${data.data.id}/review`);
       } catch (analysisErr) {
-        // Analysis failed, but request was created successfully
-        // Could show a warning to the user if needed
+        console.error("Analysis error:", analysisErr);
+        setError("Request created, but analysis failed. You can retry later.");
       } finally {
         setAnalyzing(false);
       }
 
       setRequest("");
-      
-      setTimeout(() => {
-        router.push("/history");
-      }, 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -108,9 +109,9 @@ export function RequestForm() {
             </div>
           )}
 
-          {success && (
+          {success && !analyzing && (
             <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 px-4 py-3 rounded-lg text-sm">
-              Request created successfully! Redirecting to history...
+              Request created successfully! Opening AI review...
             </div>
           )}
 
@@ -119,7 +120,7 @@ export function RequestForm() {
             disabled={loading || analyzing || !request.trim()}
             className="w-full"
           >
-            {loading ? "Creating..." : analyzing ? "Analyzing..." : "Analyze Request"}
+            {loading ? "Creating Request..." : analyzing ? "Analyzing..." : "Submit Request"}
           </Button>
         </form>
       </CardContent>
