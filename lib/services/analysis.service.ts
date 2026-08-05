@@ -4,6 +4,7 @@ import {
   ANALYSIS_SYSTEM_PROMPT,
   buildAnalysisPrompt,
 } from "@/lib/prompts/analysis.prompt";
+import { analysisResultSchema } from "@/lib/validations/analysis.schema";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
@@ -34,8 +35,9 @@ export class AnalysisService {
       throw new Error("No response from AI");
     }
 
-    const result = JSON.parse(content) as AnalysisResult;
-    return result;
+    // Validate OpenAI response with Zod
+    const parsed = analysisResultSchema.parse(JSON.parse(content));
+    return parsed;
   }
 
   // Save analysis to database
