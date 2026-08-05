@@ -39,9 +39,14 @@ export class BriefService {
       throw new Error("No response from AI");
     }
 
-    // Validate OpenAI response with Zod
-    const parsed = briefResultSchema.parse(JSON.parse(content));
-    return parsed;
+    // Parse and validate OpenAI response with Zod
+    try {
+      const parsed = briefResultSchema.parse(JSON.parse(content));
+      return parsed;
+    } catch (error) {
+      console.error("AI response parsing error:", error);
+      throw new Error("Invalid AI response format");
+    }
   }
 
   // Save brief and update request status (two separate DB operations)

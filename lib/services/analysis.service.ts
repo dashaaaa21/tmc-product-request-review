@@ -35,9 +35,14 @@ export class AnalysisService {
       throw new Error("No response from AI");
     }
 
-    // Validate OpenAI response with Zod
-    const parsed = analysisResultSchema.parse(JSON.parse(content));
-    return parsed;
+    // Parse and validate OpenAI response with Zod
+    try {
+      const parsed = analysisResultSchema.parse(JSON.parse(content));
+      return parsed;
+    } catch (error) {
+      console.error("AI response parsing error:", error);
+      throw new Error("Invalid AI response format");
+    }
   }
 
   // Save analysis to database
@@ -54,7 +59,8 @@ export class AnalysisService {
     });
 
     if (error) {
-      throw new Error("Failed to save analysis");
+      console.error("Save analysis error details:", error);
+      throw new Error(`Failed to save analysis: ${error.message}`);
     }
   }
 
@@ -87,7 +93,8 @@ export class AnalysisService {
       .maybeSingle();
 
     if (error) {
-      throw new Error("Failed to fetch analysis");
+      console.error("Fetch analysis error details:", error);
+      throw new Error(`Failed to fetch analysis: ${error.message}`);
     }
 
     return data ? (data.key_points as AnalysisResult) : null;

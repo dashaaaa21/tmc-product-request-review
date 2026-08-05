@@ -40,8 +40,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Use description from database instead of client input for security
+    const textToAnalyze = productRequest.description || requestText;
+
     // Analyze the request
-    const analysis = await AnalysisService.analyzeRequest(requestText);
+    const analysis = await AnalysisService.analyzeRequest(textToAnalyze);
 
     // Save analysis
     await AnalysisService.saveAnalysis(requestId, analysis);
