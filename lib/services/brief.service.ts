@@ -113,14 +113,25 @@ export class BriefService {
       throw new Error("Failed to fetch brief");
     }
 
-    return data
-      ? {
-          productOverview: data.product_overview || "",
-          confirmedRequirements: data.confirmed_requirements || [],
-          assumptions: data.assumptions || [],
-          openQuestions: data.open_questions || [],
-          procurementSummary: data.procurement_summary || "",
-        }
-      : null;
+    if (!data) {
+      return null;
+    }
+
+    // Normalize JSONB fields to arrays (защита від некоректних даних у БД)
+    const confirmedRequirements = Array.isArray(data.confirmed_requirements)
+      ? data.confirmed_requirements
+      : [];
+    const assumptions = Array.isArray(data.assumptions) ? data.assumptions : [];
+    const openQuestions = Array.isArray(data.open_questions)
+      ? data.open_questions
+      : [];
+
+    return {
+      productOverview: data.product_overview || "",
+      confirmedRequirements,
+      assumptions,
+      openQuestions,
+      procurementSummary: data.procurement_summary || "",
+    };
   }
 }
