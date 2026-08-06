@@ -54,7 +54,6 @@ export class AnalysisService {
 
     const { error } = await supabase.from("analyses").insert({
       request_id: requestId,
-      analysis_text: `AI Analysis completed at ${new Date().toISOString()}`,
       key_points: analysis,
     });
 
