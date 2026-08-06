@@ -25,8 +25,17 @@ export default function DashboardPage() {
         throw new Error(data.error || "Failed to fetch requests");
       }
 
-      // Get only 3 most recent requests
-      setRequests((data.data || []).slice(0, 3));
+      const allRequests = data.data || [];
+      
+      // Stats from ALL requests
+      setStats({
+        total: allRequests.length,
+        pending: allRequests.filter((r: ProductRequest) => r.status === "pending").length,
+        approved: allRequests.filter((r: ProductRequest) => r.status === "approved").length,
+      });
+
+      // Show only 3 most recent
+      setRequests(allRequests.slice(0, 3));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load data");
     } finally {
@@ -34,12 +43,12 @@ export default function DashboardPage() {
     }
   }
 
-  // Calculate stats
-  const stats = {
-    total: requests.length,
-    pending: requests.filter((r) => r.status === "pending").length,
-    approved: requests.filter((r) => r.status === "approved").length,
-  };
+  // Stats state
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    approved: 0,
+  });
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">
