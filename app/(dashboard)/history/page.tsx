@@ -159,7 +159,7 @@ export default function HistoryPage() {
         {/* Search and Filter */}
         {!loading && requests.length > 0 && (
           <div className="space-y-4">
-            <div className="flex gap-4">
+            <div className="flex flex-col md:flex-row gap-4">
               <input
                 type="text"
                 placeholder="Search requests..."
@@ -178,7 +178,7 @@ export default function HistoryPage() {
                 <option value="oldest">Oldest First</option>
               </select>
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-col md:flex-row gap-4">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
