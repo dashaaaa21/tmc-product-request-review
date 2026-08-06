@@ -54,7 +54,6 @@ export class AnalysisService {
 
     const { error } = await supabase.from("analyses").insert({
       request_id: requestId,
-      analysis_text: `AI Analysis completed at ${new Date().toISOString()}`,
       key_points: analysis,
     });
 
@@ -97,6 +96,16 @@ export class AnalysisService {
       throw new Error(`Failed to fetch analysis: ${error.message}`);
     }
 
-    return data ? (data.key_points as AnalysisResult) : null;
+    if (!data) {
+      return null;
+    }
+
+    // Validate JSONB data with Zod (захист від некоректних даних у БД)
+    try {
+      return analysisResultSchema.parse(data.key_points);
+    } catch (validationError) {
+      console.error("Analysis data validation error:", validationError);
+      throw new Error("Invalid analysis data in database");
+    }
   }
 }

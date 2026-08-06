@@ -57,10 +57,11 @@ export class BriefService {
     // Save brief
     const { error: briefError } = await supabase.from("briefs").insert({
       request_id: requestId,
-      facts: brief.facts,
+      product_overview: brief.productOverview,
+      confirmed_requirements: brief.confirmedRequirements,
       assumptions: brief.assumptions,
-      unknowns: brief.unknowns,
-      final_brief: brief.finalBrief,
+      open_questions: brief.openQuestions,
+      procurement_summary: brief.procurementSummary,
     });
 
     if (briefError) {
@@ -112,13 +113,25 @@ export class BriefService {
       throw new Error("Failed to fetch brief");
     }
 
-    return data
-      ? {
-          facts: data.facts || [],
-          assumptions: data.assumptions || [],
-          unknowns: data.unknowns || [],
-          finalBrief: data.final_brief || "",
-        }
-      : null;
+    if (!data) {
+      return null;
+    }
+
+    // Normalize JSONB fields to arrays (защита від некоректних даних у БД)
+    const confirmedRequirements = Array.isArray(data.confirmed_requirements)
+      ? data.confirmed_requirements
+      : [];
+    const assumptions = Array.isArray(data.assumptions) ? data.assumptions : [];
+    const openQuestions = Array.isArray(data.open_questions)
+      ? data.open_questions
+      : [];
+
+    return {
+      productOverview: data.product_overview || "",
+      confirmedRequirements,
+      assumptions,
+      openQuestions,
+      procurementSummary: data.procurement_summary || "",
+    };
   }
 }

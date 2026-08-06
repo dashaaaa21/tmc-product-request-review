@@ -86,11 +86,7 @@ CREATE POLICY "Users can delete their own requests"
 CREATE TABLE IF NOT EXISTS analyses (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   request_id UUID NOT NULL REFERENCES requests(id) ON DELETE CASCADE,
-  analysis_text TEXT NOT NULL,
-  feasibility_score INTEGER CHECK (feasibility_score BETWEEN 1 AND 10),
-  estimated_effort TEXT,
-  suggested_priority TEXT CHECK (suggested_priority IN ('low', 'medium', 'high')),
-  key_points JSONB,
+  key_points JSONB NOT NULL DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -131,10 +127,11 @@ CREATE POLICY "Users can create analyses for their own requests"
 CREATE TABLE IF NOT EXISTS briefs (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   request_id UUID NOT NULL REFERENCES requests(id) ON DELETE CASCADE,
-  facts JSONB,
-  assumptions JSONB,
-  unknowns JSONB,
-  final_brief TEXT NOT NULL,
+  product_overview TEXT NOT NULL,
+  confirmed_requirements JSONB NOT NULL DEFAULT '[]'::jsonb,
+  assumptions JSONB NOT NULL DEFAULT '[]'::jsonb,
+  open_questions JSONB NOT NULL DEFAULT '[]'::jsonb,
+  procurement_summary TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

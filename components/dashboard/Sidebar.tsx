@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { LayoutDashboard, Plus, History, FileText, LogOut } from "lucide-react";
+import { LayoutDashboard, Plus, History, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
@@ -21,11 +21,6 @@ const navItems = [
     href: "/history",
     label: "History",
     icon: History,
-  },
-  {
-    href: "/brief",
-    label: "Product Brief",
-    icon: FileText,
   },
 ];
 
