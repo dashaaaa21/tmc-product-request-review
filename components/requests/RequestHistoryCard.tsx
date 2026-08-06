@@ -29,13 +29,6 @@ export function RequestHistoryCard({ request }: RequestHistoryCardProps) {
     implemented: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200",
   };
 
-  // Priority badge color
-  const priorityColors = {
-    low: "text-gray-600 dark:text-gray-400",
-    medium: "text-orange-600 dark:text-orange-400",
-    high: "text-red-600 dark:text-red-400",
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -64,13 +57,6 @@ export function RequestHistoryCard({ request }: RequestHistoryCardProps) {
             Category:{" "}
             <span className="font-medium text-gray-900 dark:text-gray-100">
               {request.category}
-            </span>
-          </span>
-          <span className={priorityColors[request.priority]}>
-            Priority:{" "}
-            <span className="font-medium">
-              {request.priority.charAt(0).toUpperCase() +
-                request.priority.slice(1)}
             </span>
           </span>
         </div>
