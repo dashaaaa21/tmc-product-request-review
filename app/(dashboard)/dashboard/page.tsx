@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProductRequest } from "@/types/request.types";
 
 export default function DashboardPage() {
@@ -11,6 +9,11 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [requests, setRequests] = useState<ProductRequest[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    approved: 0,
+  });
 
   useEffect(() => {
     fetchRecentRequests();
@@ -27,14 +30,12 @@ export default function DashboardPage() {
 
       const allRequests = data.data || [];
       
-      // Stats from ALL requests
       setStats({
         total: allRequests.length,
         pending: allRequests.filter((r: ProductRequest) => r.status === "pending").length,
         approved: allRequests.filter((r: ProductRequest) => r.status === "approved").length,
       });
 
-      // Show only 3 most recent
       setRequests(allRequests.slice(0, 3));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load data");
@@ -43,193 +44,161 @@ export default function DashboardPage() {
     }
   }
 
-  // Stats state
-  const [stats, setStats] = useState({
-    total: 0,
-    pending: 0,
-    approved: 0,
-  });
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-zinc-100 p-8">
+        <div className="animate-pulse space-y-8">
+          <div className="h-12 bg-zinc-200 rounded-2xl w-1/3"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-40 bg-zinc-50 rounded-3xl border-2 border-zinc-200"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-zinc-100 p-8">
+        <div className="border-2 border-red-300 rounded-3xl p-6 bg-red-50">
+          <p className="text-red-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
-      {/* Welcome Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-          Welcome to TMC Dashboard
-        </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
-          Create and review merchandise requests with AI-powered analysis
-        </p>
-        <Button size="lg" onClick={() => router.push("/requests")}>
-          + New Request
-        </Button>
+    <div className="min-h-screen bg-zinc-100 text-black p-8 space-y-12">
+      {/* Header */}
+      <div>
+        <h1 className="text-5xl font-black italic text-black">Dashboard</h1>
+        <p className="text-zinc-600 mt-3 text-lg">Overview of your product requests</p>
+      </div>
+
+      {/* Quick Actions */}
+      <div>
+        <h2 className="text-4xl font-black italic mb-6 text-black">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            className="border-2 border-zinc-200 rounded-3xl p-8 bg-zinc-50 hover:border-lime-400 transition-all cursor-pointer shadow-sm"
+            onClick={() => router.push("/requests")}
+          >
+            <div className="w-12 h-12 rounded-full border-2 border-lime-400 mb-6 flex items-center justify-center text-3xl text-lime-500 font-bold pb-2">
+              +
+            </div>
+            <h3 className="text-xl font-black italic mb-2 text-black">New Request</h3>
+            <p className="text-zinc-600 mb-6">Create a new product request for analysis</p>
+            <button className="w-full px-6 py-3 bg-lime-400 text-black rounded-full font-bold hover:bg-lime-300 transition-colors">
+              CREATE →
+            </button>
+          </div>
+
+          <div
+            className="border-2 border-zinc-200 rounded-3xl p-8 bg-zinc-50 hover:border-lime-400 transition-all cursor-pointer shadow-sm"
+            onClick={() => router.push("/history")}
+          >
+            <div className="w-12 h-12 rounded-full border-2 border-lime-400 mb-6 flex items-center justify-center">
+              <svg className="w-6 h-6 text-lime-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-black italic mb-2 text-black">View History</h3>
+            <p className="text-zinc-600 mb-6">Browse all your previous requests</p>
+            <button className="w-full px-6 py-3 bg-lime-400 text-black rounded-full font-bold hover:bg-lime-300 transition-colors">
+              VIEW →
+            </button>
+          </div>
+
+          <div
+            className="border-2 border-zinc-200 rounded-3xl p-8 bg-zinc-50 hover:border-lime-400 transition-all cursor-pointer shadow-sm"
+            onClick={() => {
+              if (requests.length > 0) {
+                router.push(`/requests/${requests[0].id}/review`);
+              }
+            }}
+          >
+            <div className="w-12 h-12 rounded-full border-2 border-lime-400 mb-6 flex items-center justify-center">
+              <svg className="w-6 h-6 text-lime-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-black italic mb-2 text-black">Latest Review</h3>
+            <p className="text-zinc-600 mb-6">View your most recent request analysis</p>
+            <button className="w-full px-6 py-3 bg-lime-400 text-black rounded-full font-bold hover:bg-lime-300 transition-colors">
+              REVIEW →
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Stats Cards */}
-      {!loading && requests.length > 0 && (
+      <div>
+        <h2 className="text-4xl font-black italic mb-6 text-black">Statistics</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Total Requests
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                {stats.total}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-yellow-600 dark:text-yellow-400">
-                Pending
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-yellow-700 dark:text-yellow-300">
-                {stats.pending}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-green-600 dark:text-green-400">
-                Approved
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-green-700 dark:text-green-300">
-                {stats.approved}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="border-2 border-zinc-200 rounded-3xl p-8 bg-zinc-50 hover:border-lime-400 transition-colors shadow-sm">
+            <h3 className="text-2xl font-black italic mb-2 text-black">Total Requests</h3>
+            <p className="text-zinc-600 mb-6">All product requests submitted</p>
+            <div className="text-5xl font-bold text-black">{stats.total}</div>
+          </div>
+
+          <div className="border-2 border-orange-200 rounded-3xl p-8 bg-orange-50 hover:border-orange-400 transition-colors shadow-sm">
+            <h3 className="text-2xl font-black italic mb-2 text-black">Pending</h3>
+            <p className="text-zinc-600 mb-6">Awaiting review and analysis</p>
+            <div className="text-5xl font-bold text-orange-500">{stats.pending}</div>
+          </div>
+
+          <div className="border-2 border-lime-200 rounded-3xl p-8 bg-lime-50 hover:border-lime-400 transition-colors shadow-sm">
+            <h3 className="text-2xl font-black italic mb-2 text-black">Approved</h3>
+            <p className="text-zinc-600 mb-6">Ready for procurement team</p>
+            <div className="text-5xl font-bold text-lime-500">{stats.approved}</div>
+          </div>
         </div>
-      )}
+      </div>
 
       {/* Recent Requests */}
-      {!loading && requests.length > 0 && (
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Recent Requests</CardTitle>
-            <Button variant="outline" onClick={() => router.push("/history")}>
-              View All
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {requests.map((request) => (
-                <div
-                  key={request.id}
-                  className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                  onClick={() => router.push(`/requests/${request.id}/review`)}
-                >
+      <div>
+        <h2 className="text-4xl font-black italic mb-6 text-black">Recent Requests</h2>
+        {requests.length === 0 ? (
+          <div className="border-2 border-zinc-200 rounded-3xl p-12 text-center bg-zinc-50 shadow-sm">
+            <p className="text-zinc-600 mb-6 text-lg">No requests yet</p>
+            <button
+              onClick={() => router.push("/requests")}
+              className="px-10 py-4 bg-lime-400 text-black rounded-full font-bold border-2 border-lime-400 hover:bg-lime-300 transition-all"
+            >
+              CREATE REQUEST →
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {requests.map((request) => (
+              <div
+                key={request.id}
+                className="border-2 border-zinc-200 rounded-3xl p-6 bg-zinc-50 hover:border-lime-400 transition-all cursor-pointer shadow-sm"
+                onClick={() => router.push(`/requests/${request.id}/review`)}
+              >
+                <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
-                      {request.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
-                      {request.description}
-                    </p>
+                    <h3 className="text-2xl font-black italic mb-2 text-black">{request.title}</h3>
+                    <p className="text-zinc-600">{request.category}</p>
                   </div>
-                  <div className="ml-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        request.status === "pending"
-                          ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200"
-                          : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200"
-                      }`}
-                    >
-                      {request.status.charAt(0).toUpperCase() +
-                        request.status.slice(1)}
-                    </span>
-                  </div>
+                  <span
+                    className={`px-4 py-2 rounded-full text-sm font-medium ${
+                      request.status === "approved"
+                        ? "bg-lime-400/20 text-lime-700 border-2 border-lime-400"
+                        : request.status === "pending"
+                        ? "bg-orange-400/20 text-orange-700 border-2 border-orange-400"
+                        : "bg-zinc-200 text-zinc-700 border-2 border-zinc-300"
+                    }`}
+                  >
+                    {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                  </span>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Loading State */}
-      {loading && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-gray-100 mx-auto mb-4"></div>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Loading dashboard...
-                </p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Empty State */}
-      {!loading && requests.length === 0 && !error && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center py-12">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                No requests yet
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Create your first merchandise request to get started
-              </p>
-              <Button onClick={() => router.push("/requests")}>
-                Create Request
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Error State */}
-      {error && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center py-8">
-              <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-              <Button onClick={() => fetchRecentRequests()}>Try Again</Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push("/requests")}>
-          <CardHeader>
-            <CardTitle className="text-lg">New Request</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Create a new product request with AI-powered analysis
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push("/history")}>
-          <CardHeader>
-            <CardTitle className="text-lg">History</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              View all your previous requests and their status
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="text-lg">Product Briefs</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Access AI-generated product briefs from History page
-            </p>
-          </CardContent>
-        </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
