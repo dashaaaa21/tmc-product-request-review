@@ -58,13 +58,16 @@ export async function GET(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (!user) {
+      console.error("GET /api/requests: No authenticated user");
       return NextResponse.json<ApiResponse>(
         { error: "Unauthorized" },
         { status: 401 }
       );
     }
 
+    console.log("GET /api/requests: Fetching requests for user:", user.id);
     const requests = await RequestService.getRequests(user.id);
+    console.log("GET /api/requests: Found", requests.length, "requests");
 
     return NextResponse.json<ApiResponse<ProductRequest[]>>(
       { data: requests },
@@ -72,8 +75,9 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     console.error("Error fetching requests:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unable to fetch requests";
     return NextResponse.json<ApiResponse>(
-      { error: "Unable to fetch requests" },
+      { error: errorMessage },
       { status: 500 }
     );
   }
