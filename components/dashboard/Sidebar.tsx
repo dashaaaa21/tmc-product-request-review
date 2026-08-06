@@ -1,10 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { LayoutDashboard, Plus, History, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
+import { LayoutDashboard, Plus, History } from "lucide-react";
 
 const navItems = [
   {
@@ -26,19 +24,11 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
-  };
 
   return (
-    <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+    <aside className="w-64 bg-zinc-100 border-r-2 border-zinc-200 flex flex-col">
+      <div className="p-6 border-b-2 border-zinc-200">
+        <h1 className="text-2xl font-black italic text-black">
           TMC AI Product Builder
         </h1>
       </div>
@@ -53,31 +43,20 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={`
-                flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+                flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-bold
                 ${
                   isActive
-                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    ? "bg-lime-400 text-black"
+                    : "text-zinc-600 hover:bg-zinc-100"
                 }
               `}
             >
-              <Icon className="w-5 h-5" />
+              <Icon className="w-5 h-5 flex-shrink-0" />
               <span>{item.label}</span>
             </Link>
           );
         })}
       </nav>
-
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-        <Button
-          onClick={handleLogout}
-          variant="outline"
-          className="w-full justify-start gap-3"
-        >
-          <LogOut className="w-5 h-5" />
-          Logout
-        </Button>
-      </div>
     </aside>
   );
 }
