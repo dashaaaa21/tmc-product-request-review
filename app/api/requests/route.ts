@@ -57,7 +57,6 @@ export async function GET(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      console.error("GET /api/requests: No authenticated user");
       return NextResponse.json<ApiResponse>(
         { error: "Unauthorized" },
         { status: 401 }
