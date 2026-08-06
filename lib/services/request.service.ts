@@ -6,8 +6,7 @@ export class RequestService {
     userId: string,
     title: string,
     description: string,
-    category: string,
-    priority: "low" | "medium" | "high"
+    category: string
   ): Promise<ProductRequest> {
     const supabase = await createClient();
 
@@ -18,7 +17,6 @@ export class RequestService {
         title,
         description,
         category,
-        priority,
         status: "pending", // New requests start as pending
       })
       .select()
