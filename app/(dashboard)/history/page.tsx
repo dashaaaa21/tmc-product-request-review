@@ -17,25 +17,27 @@ export default function HistoryPage() {
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
 
   useEffect(() => {
-    async function fetchRequests() {
-      try {
-        const response = await fetch("/api/requests");
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch requests");
-        }
-
-        setRequests(data.data || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-      } finally {
-        setLoading(false);
-      }
-    }
-
     fetchRequests();
   }, []);
+
+  async function fetchRequests() {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch("/api/requests");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch requests");
+      }
+
+      setRequests(data.data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   // Filter and search requests
   const filteredRequests = useMemo(() => {
@@ -96,7 +98,7 @@ export default function HistoryPage() {
       <div className="max-w-7xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8 text-center">
           <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-          <Button onClick={() => window.location.reload()}>Try Again</Button>
+          <Button onClick={() => fetchRequests()}>Try Again</Button>
         </div>
       </div>
     );
@@ -115,7 +117,7 @@ export default function HistoryPage() {
               product briefs
             </p>
           </div>
-          <Button onClick={() => router.push("/dashboard")}>
+          <Button onClick={() => router.push("/requests")}>
             + New Request
           </Button>
         </div>
@@ -236,7 +238,7 @@ export default function HistoryPage() {
           <p className="text-gray-500 dark:text-gray-500 text-sm mb-6">
             Create your first merchandise request to get started
           </p>
-          <Button onClick={() => router.push("/dashboard")}>
+          <Button onClick={() => router.push("/requests")}>
             Create Request
           </Button>
         </div>
