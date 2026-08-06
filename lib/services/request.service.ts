@@ -2,18 +2,24 @@ import { createClient } from "@/lib/supabase/server";
 import { ProductRequest } from "@/types/request.types";
 
 export class RequestService {
-  static async createRequest(userId: string, requestText: string): Promise<ProductRequest> {
+  static async createRequest(
+    userId: string,
+    title: string,
+    description: string,
+    category: string,
+    priority: "low" | "medium" | "high"
+  ): Promise<ProductRequest> {
     const supabase = await createClient();
 
     const { data, error } = await supabase
       .from("requests")
       .insert({
         user_id: userId,
-        title: "Product Request",
-        description: requestText,
-        category: "merchandise",
-        priority: "medium",
-        status: "pending",
+        title,
+        description,
+        category,
+        priority,
+        status: "pending", // New requests start as pending
       })
       .select()
       .single();

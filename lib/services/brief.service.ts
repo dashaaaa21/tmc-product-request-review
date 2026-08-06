@@ -50,6 +50,7 @@ export class BriefService {
   }
 
   // Save brief and update request status (two separate DB operations)
+  // Status workflow: pending → approved (after brief generation)
   static async save(requestId: string, brief: BriefResult): Promise<void> {
     const supabase = await createClient();
 
@@ -67,7 +68,7 @@ export class BriefService {
       throw new Error(`Failed to save brief: ${briefError.message}`);
     }
 
-    // Update request status
+    // Update request status to approved after brief generation
     const { error: statusError } = await supabase
       .from("requests")
       .update({ status: "approved" })
