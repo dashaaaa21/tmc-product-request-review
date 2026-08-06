@@ -8,7 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 export function RequestForm() {
   const router = useRouter();
-  const [request, setRequest] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("merchandise");
+  const [priority, setPriority] = useState<"low" | "medium" | "high">("medium");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -26,7 +29,7 @@ export function RequestForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ requestText: request }),
+        body: JSON.stringify({ title, description, category, priority }),
       });
 
       const data = await response.json();
@@ -47,7 +50,7 @@ export function RequestForm() {
           },
           body: JSON.stringify({ 
             requestId: data.data.id,
-            requestText: request 
+            requestText: description 
           }),
         });
 
@@ -67,7 +70,11 @@ export function RequestForm() {
         setAnalyzing(false);
       }
 
-      setRequest("");
+      // Reset form
+      setTitle("");
+      setDescription("");
+      setCategory("merchandise");
+      setPriority("medium");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -87,15 +94,77 @@ export function RequestForm() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <label
-              htmlFor="request"
+              htmlFor="title"
               className="text-sm font-medium text-gray-900 dark:text-white"
             >
-              Describe your merchandise request
+              Title *
+            </label>
+            <input
+              id="title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Example: Custom Water Bottles"
+              required
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label
+                htmlFor="category"
+                className="text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Category *
+              </label>
+              <select
+                id="category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="merchandise">Merchandise</option>
+                <option value="apparel">Apparel</option>
+                <option value="accessories">Accessories</option>
+                <option value="promotional">Promotional</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="priority"
+                className="text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Priority *
+              </label>
+              <select
+                id="priority"
+                value={priority}
+                onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
+                required
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label
+              htmlFor="description"
+              className="text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Description *
             </label>
             <Textarea
-              id="request"
-              value={request}
-              onChange={(e) => setRequest(e.target.value)}
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Example: 500 matte-black aluminium water bottles with a white logo, delivered in Amsterdam within five weeks, maximum budget €9 per item."
               rows={8}
               required
@@ -117,7 +186,7 @@ export function RequestForm() {
 
           <Button
             type="submit"
-            disabled={loading || analyzing || !request.trim()}
+            disabled={loading || analyzing || !title.trim() || !description.trim()}
             className="w-full"
           >
             {loading ? "Creating Request..." : analyzing ? "Analyzing..." : "Submit Request"}

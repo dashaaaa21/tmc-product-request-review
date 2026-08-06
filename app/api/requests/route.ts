@@ -28,8 +28,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { requestText } = validation.data;
-    const productRequest = await RequestService.createRequest(user.id, requestText);
+    const { title, description, category, priority } = validation.data;
+    const productRequest = await RequestService.createRequest(
+      user.id,
+      title,
+      description,
+      category,
+      priority
+    );
 
     return NextResponse.json<ApiResponse<ProductRequest>>(
       { data: productRequest },
