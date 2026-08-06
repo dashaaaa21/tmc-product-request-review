@@ -12,9 +12,6 @@ export const createRequestSchema = z.object({
     .min(20, "Description must be at least 20 characters")
     .max(5000, "Description must not exceed 5000 characters"),
   category: z.string().min(1, "Category is required"),
-  priority: z.enum(["low", "medium", "high"], {
-    errorMap: () => ({ message: "Priority must be low, medium, or high" }),
-  }),
 });
 
 export type CreateRequestInput = z.infer<typeof createRequestSchema>;

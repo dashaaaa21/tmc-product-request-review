@@ -9,7 +9,6 @@ export interface ProductRequest {
   description: string;
   status: "pending" | "approved" | "rejected" | "implemented";
   category: string;
-  priority: "low" | "medium" | "high";
   created_at: string;
   updated_at: string;
 }

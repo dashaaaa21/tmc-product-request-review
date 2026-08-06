@@ -28,13 +28,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { title, description, category, priority } = validation.data;
+    const { title, description, category } = validation.data;
     const productRequest = await RequestService.createRequest(
       user.id,
       title,
       description,
-      category,
-      priority
+      category
     );
 
     return NextResponse.json<ApiResponse<ProductRequest>>(
@@ -64,7 +63,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    console.log("GET /api/requests: Fetching requests for user:", user.id);
     const requests = await RequestService.getRequests(user.id);
+    console.log("GET /api/requests: Found", requests.length, "requests");
 
     return NextResponse.json<ApiResponse<ProductRequest[]>>(
       { data: requests },

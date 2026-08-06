@@ -13,7 +13,6 @@ export default function HistoryPage() {
   const [requests, setRequests] = useState<ProductRequest[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [priorityFilter, setPriorityFilter] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
 
   useEffect(() => {
@@ -52,11 +51,7 @@ export default function HistoryPage() {
       const matchesStatus =
         statusFilter === "all" || request.status === statusFilter;
 
-      // Priority filter
-      const matchesPriority =
-        priorityFilter === "all" || request.priority === priorityFilter;
-
-      return matchesSearch && matchesStatus && matchesPriority;
+      return matchesSearch && matchesStatus;
     });
 
     // Sort
@@ -67,7 +62,7 @@ export default function HistoryPage() {
     });
 
     return filtered;
-  }, [requests, searchQuery, statusFilter, priorityFilter, sortOrder]);
+  }, [requests, searchQuery, statusFilter, sortOrder]);
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -184,17 +179,6 @@ export default function HistoryPage() {
                 <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
               </select>
-              <select
-                value={priorityFilter}
-                aria-label="Filter by priority"
-                onChange={(e) => setPriorityFilter(e.target.value)}
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All Priority</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
             </div>
           </div>
         )}
@@ -210,7 +194,6 @@ export default function HistoryPage() {
             onClick={() => {
               setSearchQuery("");
               setStatusFilter("all");
-              setPriorityFilter("all");
               setSortOrder("newest");
             }}
           >
