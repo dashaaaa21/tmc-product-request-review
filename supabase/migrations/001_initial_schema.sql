@@ -131,10 +131,11 @@ CREATE POLICY "Users can create analyses for their own requests"
 CREATE TABLE IF NOT EXISTS briefs (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   request_id UUID NOT NULL REFERENCES requests(id) ON DELETE CASCADE,
-  facts JSONB,
+  product_overview TEXT NOT NULL,
+  confirmed_requirements JSONB,
   assumptions JSONB,
-  unknowns JSONB,
-  final_brief TEXT NOT NULL,
+  open_questions JSONB,
+  procurement_summary TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

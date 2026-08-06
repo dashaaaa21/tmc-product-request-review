@@ -57,10 +57,11 @@ export class BriefService {
     // Save brief
     const { error: briefError } = await supabase.from("briefs").insert({
       request_id: requestId,
-      facts: brief.facts,
+      product_overview: brief.productOverview,
+      confirmed_requirements: brief.confirmedRequirements,
       assumptions: brief.assumptions,
-      unknowns: brief.unknowns,
-      final_brief: brief.finalBrief,
+      open_questions: brief.openQuestions,
+      procurement_summary: brief.procurementSummary,
     });
 
     if (briefError) {
@@ -114,10 +115,11 @@ export class BriefService {
 
     return data
       ? {
-          facts: data.facts || [],
+          productOverview: data.product_overview || "",
+          confirmedRequirements: data.confirmed_requirements || [],
           assumptions: data.assumptions || [],
-          unknowns: data.unknowns || [],
-          finalBrief: data.final_brief || "",
+          openQuestions: data.open_questions || [],
+          procurementSummary: data.procurement_summary || "",
         }
       : null;
   }

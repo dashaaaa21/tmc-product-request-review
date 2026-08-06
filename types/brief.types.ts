@@ -1,8 +1,9 @@
 export interface BriefResult {
-  facts: string[];
+  productOverview: string;
+  confirmedRequirements: string[];
   assumptions: string[];
-  unknowns: string[];
-  finalBrief: string;
+  openQuestions: string[];
+  procurementSummary: string;
 }
 
 export interface BriefResponse {

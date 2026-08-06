@@ -5,10 +5,11 @@ export const createBriefSchema = z.object({
 });
 
 export const briefResultSchema = z.object({
-  facts: z.array(z.string()),
+  productOverview: z.string().min(10, "Product overview is required"),
+  confirmedRequirements: z.array(z.string()),
   assumptions: z.array(z.string()),
-  unknowns: z.array(z.string()),
-  finalBrief: z.string().min(1, "Final brief cannot be empty"),
+  openQuestions: z.array(z.string()),
+  procurementSummary: z.string().min(20, "Procurement summary is required"),
 });
 
 export type CreateBriefInput = z.infer<typeof createBriefSchema>;
