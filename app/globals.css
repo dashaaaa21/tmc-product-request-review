@@ -127,4 +127,43 @@
   html {
     @apply font-sans;
   }
+  
+  /* Custom select styles - remove default browser styling */
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none;
+  }
+  
+  select::-ms-expand {
+    display: none;
+  }
+  
+  /* Custom option colors - force lime for selected */
+  select option {
+    background-color: white !important;
+    color: #18181b !important;
+    padding: 8px 12px;
+  }
+  
+  select option:checked {
+    background: linear-gradient(#d9f99d, #d9f99d) !important;
+    background-color: #d9f99d !important;
+    color: #365314 !important;
+    font-weight: 600;
+  }
+  
+  select option:hover {
+    background-color: #f4f4f5 !important;
+    color: #18181b !important;
+  }
+  
+  /* Firefox specific */
+  @-moz-document url-prefix() {
+    select option:checked {
+      background-color: #d9f99d !important;
+      color: #365314 !important;
+    }
+  }
 }
