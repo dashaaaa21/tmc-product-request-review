@@ -19,7 +19,7 @@ export class RequestService {
         description,
         category,
         priority,
-        status: "pending",
+        status: "pending", // New requests start as pending
       })
       .select()
       .single();

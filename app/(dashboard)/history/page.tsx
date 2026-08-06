@@ -74,8 +74,7 @@ export default function HistoryPage() {
     const total = requests.length;
     const approved = requests.filter((r) => r.status === "approved").length;
     const pending = requests.filter((r) => r.status === "pending").length;
-    const rejected = requests.filter((r) => r.status === "rejected").length;
-    return { total, approved, pending, rejected };
+    return { total, approved, pending };
   }, [requests]);
 
   if (loading) {
@@ -124,19 +123,11 @@ export default function HistoryPage() {
 
         {/* Stats */}
         {!loading && requests.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
             <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
               <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {stats.total}
-              </p>
-            </div>
-            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-              <p className="text-sm text-green-600 dark:text-green-400">
-                Approved
-              </p>
-              <p className="text-2xl font-bold text-green-700 dark:text-green-300">
-                {stats.approved}
               </p>
             </div>
             <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
@@ -147,12 +138,12 @@ export default function HistoryPage() {
                 {stats.pending}
               </p>
             </div>
-            <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
-              <p className="text-sm text-red-600 dark:text-red-400">
-                Rejected
+            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+              <p className="text-sm text-green-600 dark:text-green-400">
+                Approved
               </p>
-              <p className="text-2xl font-bold text-red-700 dark:text-red-300">
-                {stats.rejected}
+              <p className="text-2xl font-bold text-green-700 dark:text-green-300">
+                {stats.approved}
               </p>
             </div>
           </div>
@@ -192,8 +183,6 @@ export default function HistoryPage() {
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-                <option value="implemented">Implemented</option>
               </select>
               <select
                 value={priorityFilter}
