@@ -4,8 +4,33 @@ interface BriefSectionProps {
   brief: BriefResult;
 }
 
+// Safe array access helper
+function safeArray<T>(arr: T[] | undefined | null): T[] {
+  return Array.isArray(arr) ? arr : [];
+}
+
+// Safe string access helper
+function safeString(str: string | undefined | null, fallback: string = ""): string {
+  return typeof str === "string" ? str : fallback;
+}
+
 // Display procurement brief document
 export function BriefSection({ brief }: BriefSectionProps) {
+  // Validate brief data
+  if (!brief) {
+    return (
+      <div className="border-2 border-red-200 rounded-3xl p-8 bg-red-50 text-center">
+        <p className="text-red-600 font-medium">Brief data is invalid or missing.</p>
+      </div>
+    );
+  }
+
+  const productOverview = safeString(brief.productOverview, "No product overview available.");
+  const confirmedRequirements = safeArray(brief.confirmedRequirements);
+  const assumptions = safeArray(brief.assumptions);
+  const openQuestions = safeArray(brief.openQuestions);
+  const procurementSummary = safeString(brief.procurementSummary, "No procurement summary available.");
+
   return (
     <div className="space-y-6">
       {/* Product Overview */}
@@ -17,7 +42,7 @@ export function BriefSection({ brief }: BriefSectionProps) {
         </div>
         <div className="p-6">
           <p className="text-zinc-700 leading-relaxed">
-            {brief.productOverview}
+            {productOverview}
           </p>
         </div>
       </div>
@@ -30,15 +55,15 @@ export function BriefSection({ brief }: BriefSectionProps) {
           </h3>
         </div>
         <div className="p-6">
-          {brief.confirmedRequirements.length > 0 ? (
+          {confirmedRequirements.length > 0 ? (
             <ul className="space-y-3">
-              {brief.confirmedRequirements.map((req, index) => (
+              {confirmedRequirements.map((req, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <span className="text-lime-600 text-lg font-bold mt-0.5">
                     ✓
                   </span>
                   <span className="text-zinc-700 leading-relaxed">
-                    {req}
+                    {safeString(req, "Invalid requirement")}
                   </span>
                 </li>
               ))}
@@ -59,15 +84,15 @@ export function BriefSection({ brief }: BriefSectionProps) {
           </h3>
         </div>
         <div className="p-6">
-          {brief.assumptions.length > 0 ? (
+          {assumptions.length > 0 ? (
             <ul className="space-y-3">
-              {brief.assumptions.map((assumption, index) => (
+              {assumptions.map((assumption, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <span className="text-purple-600 text-lg font-bold mt-0.5">
                     •
                   </span>
                   <span className="text-zinc-700 leading-relaxed">
-                    {assumption}
+                    {safeString(assumption, "Invalid assumption")}
                   </span>
                 </li>
               ))}
@@ -88,15 +113,15 @@ export function BriefSection({ brief }: BriefSectionProps) {
           </h3>
         </div>
         <div className="p-6">
-          {brief.openQuestions.length > 0 ? (
+          {openQuestions.length > 0 ? (
             <ul className="space-y-3">
-              {brief.openQuestions.map((question, index) => (
+              {openQuestions.map((question, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <span className="text-orange-600 text-lg font-bold mt-0.5">
                     ?
                   </span>
                   <span className="text-zinc-700 leading-relaxed">
-                    {question}
+                    {safeString(question, "Invalid question")}
                   </span>
                 </li>
               ))}
@@ -118,7 +143,7 @@ export function BriefSection({ brief }: BriefSectionProps) {
         </div>
         <div className="p-6">
           <p className="text-zinc-700 leading-relaxed whitespace-pre-wrap">
-            {brief.procurementSummary}
+            {procurementSummary}
           </p>
         </div>
       </div>

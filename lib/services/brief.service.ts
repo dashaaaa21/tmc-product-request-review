@@ -71,7 +71,7 @@ export class BriefService {
         const parsedContent = JSON.parse(content);
         const validatedResult = briefResultSchema.parse(parsedContent);
         return validatedResult;
-      } catch (parseError) {
+      } catch {
         console.error("Brief validation failed");
         throw new ApiError(
           "Invalid AI response format. Please try again.",

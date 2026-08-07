@@ -62,7 +62,7 @@ export class AnalysisService {
         const parsedContent = JSON.parse(content);
         const validatedResult = analysisResultSchema.parse(parsedContent);
         return validatedResult;
-      } catch (parseError) {
+      } catch {
         console.error("AI response validation failed");
         throw new ApiError(
           "Invalid AI response format. Please try again.",
