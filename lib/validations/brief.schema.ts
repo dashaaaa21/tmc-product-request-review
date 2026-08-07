@@ -21,7 +21,7 @@ export const briefResultSchema = z.object({
     .array(
       z.string().min(1, "Requirement cannot be empty")
     )
-    .min(1, "At least one requirement must be confirmed")
+    .min(0, "Requirements must be an array")
     .max(50, "Too many requirements"),
   
   assumptions: z
