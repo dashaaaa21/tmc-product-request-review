@@ -9,6 +9,13 @@ Analyze the following merchandise request and provide:
 3. Contradictions (any conflicting information)
 4. Follow-up questions (questions to clarify the request)
 
+IMPORTANT VALIDATION RULES:
+- Each fact, missing item, and contradiction must be 5-500 characters
+- Each question must be 10-500 characters and END with "?"
+- No duplicates allowed in any array
+- Maximum 50 items per array
+- Be specific and concise
+
 Merchandise Request:
 "${requestText}"
 
@@ -17,6 +24,6 @@ Respond ONLY with valid JSON in this exact format:
   "facts": ["list of confirmed facts"],
   "missing": ["list of missing information"],
   "contradictions": ["list of contradictions if any"],
-  "followUpQuestions": ["list of clarifying questions"]
+  "followUpQuestions": ["list of clarifying questions ending with ?"]
 }`;
 };

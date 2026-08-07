@@ -27,18 +27,26 @@ Analysis Results:
 
 Generate a professional procurement brief with these sections:
 
-1. productOverview: Brief 1-2 sentence summary of what is being ordered
+1. productOverview: Brief 1-2 sentence summary (at least 20 chars, 10+ words)
 2. confirmedRequirements: List only verified facts from the request (no speculation)
 3. assumptions: Reasonable assumptions for missing details - ONLY based on what's stated in the request
 4. openQuestions: Questions that need answers before final procurement (use follow-up questions as guidance)
-5. procurementSummary: 2-3 sentence summary that helps the purchasing team understand what can already be sourced and which details must still be confirmed before contacting suppliers
+5. procurementSummary: 2-3 sentence summary (at least 30 chars, 15+ words) that helps the purchasing team understand what can already be sourced and which details must still be confirmed before contacting suppliers
+
+IMPORTANT VALIDATION RULES:
+- Each requirement, assumption must be 5-500 characters
+- Each question must be 10-500 characters and END with "?"
+- No duplicates allowed in any array
+- Maximum 50 items per array
+- productOverview: minimum 20 characters, at least 10 words
+- procurementSummary: minimum 30 characters, at least 15 words
 
 Respond ONLY with valid JSON in this exact format:
 {
   "productOverview": "Brief summary...",
   "confirmedRequirements": ["requirement 1", "requirement 2"],
   "assumptions": ["assumption 1", "assumption 2"],
-  "openQuestions": ["question 1", "question 2"],
+  "openQuestions": ["question 1?", "question 2?"],
   "procurementSummary": "Summary for purchasing team..."
 }`;
 };

@@ -14,36 +14,71 @@ export const briefResultSchema = z.object({
     .string({
       message: "Product overview is required",
     })
-    .min(10, "Product overview must be at least 10 characters")
-    .max(2000, "Product overview must not exceed 2000 characters"),
+    .trim()
+    .min(20, "Product overview must be at least 20 characters")
+    .max(2000, "Product overview must not exceed 2000 characters")
+    .refine(
+      (val) => val.split(" ").length >= 10,
+      "Product overview must contain at least 10 words"
+    ),
   
   confirmedRequirements: z
     .array(
-      z.string().min(1, "Requirement cannot be empty")
+      z.string()
+        .trim()
+        .min(5, "Each requirement must be at least 5 characters")
+        .max(500, "Each requirement must not exceed 500 characters")
     )
     .min(0, "Requirements must be an array")
-    .max(50, "Too many requirements"),
+    .max(50, "Too many requirements - maximum 50 allowed")
+    .refine(
+      (arr) => new Set(arr).size === arr.length,
+      "Requirements must not contain duplicates"
+    ),
   
   assumptions: z
     .array(
-      z.string().min(1, "Assumption cannot be empty")
+      z.string()
+        .trim()
+        .min(5, "Each assumption must be at least 5 characters")
+        .max(500, "Each assumption must not exceed 500 characters")
     )
-    .min(0)
-    .max(50, "Too many assumptions"),
+    .min(0, "Assumptions must be an array")
+    .max(50, "Too many assumptions - maximum 50 allowed")
+    .refine(
+      (arr) => new Set(arr).size === arr.length,
+      "Assumptions must not contain duplicates"
+    ),
   
   openQuestions: z
     .array(
-      z.string().min(1, "Question cannot be empty")
+      z.string()
+        .trim()
+        .min(10, "Each question must be at least 10 characters")
+        .max(500, "Each question must not exceed 500 characters")
+        .refine(
+          (q) => q.endsWith("?"),
+          "Each question must end with a question mark"
+        )
     )
-    .min(0)
-    .max(50, "Too many questions"),
+    .min(0, "Questions must be an array")
+    .max(50, "Too many questions - maximum 50 allowed")
+    .refine(
+      (arr) => new Set(arr).size === arr.length,
+      "Questions must not contain duplicates"
+    ),
   
   procurementSummary: z
     .string({
       message: "Procurement summary is required",
     })
-    .min(20, "Procurement summary must be at least 20 characters")
-    .max(5000, "Procurement summary must not exceed 5000 characters"),
+    .trim()
+    .min(30, "Procurement summary must be at least 30 characters")
+    .max(5000, "Procurement summary must not exceed 5000 characters")
+    .refine(
+      (val) => val.split(" ").length >= 15,
+      "Procurement summary must contain at least 15 words"
+    ),
 });
 
 export type CreateBriefInput = z.infer<typeof createBriefSchema>;
