@@ -16,4 +16,6 @@ export interface ProductRequest {
 export interface ApiResponse<T = unknown> {
   data?: T;
   error?: string;
+  code?: string;
+  details?: unknown;
 }

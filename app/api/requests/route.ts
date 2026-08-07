@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { RequestService } from "@/lib/services/request.service";
 import { ApiResponse, ProductRequest } from "@/types/request.types";
 import { createRequestSchema } from "@/lib/validations/request.schema";
+import { handleApiError, validateAuth } from "@/lib/errors/error-handler";
+import { ApiErrors } from "@/lib/errors/api-error";
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,26 +13,18 @@ export async function POST(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json<ApiResponse>(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    validateAuth(user);
 
     const body = await request.json();
     const validation = createRequestSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json<ApiResponse>(
-        { error: validation.error.issues[0].message },
-        { status: 400 }
-      );
+      throw validation.error;
     }
 
     const { title, description, category } = validation.data;
     const productRequest = await RequestService.createRequest(
-      user.id,
+      user!.id,
       title,
       description,
       category
@@ -41,11 +35,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating request:", error);
-    return NextResponse.json<ApiResponse>(
-      { error: "Unable to create request" },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }
 
@@ -56,15 +46,10 @@ export async function GET(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json<ApiResponse>(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    validateAuth(user);
 
-    console.log("GET /api/requests: Fetching requests for user:", user.id);
-    const requests = await RequestService.getRequests(user.id);
+    console.log("GET /api/requests: Fetching requests for user:", user!.id);
+    const requests = await RequestService.getRequests(user!.id);
     console.log("GET /api/requests: Found", requests.length, "requests");
 
     return NextResponse.json<ApiResponse<ProductRequest[]>>(
@@ -72,10 +57,6 @@ export async function GET(request: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error fetching requests:", error);
-    return NextResponse.json<ApiResponse>(
-      { error: "Unable to fetch requests" },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }

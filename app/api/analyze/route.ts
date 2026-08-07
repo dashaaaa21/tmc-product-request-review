@@ -4,6 +4,8 @@ import { AnalysisService } from "@/lib/services/analysis.service";
 import { RequestService } from "@/lib/services/request.service";
 import { analysisRequestSchema } from "@/lib/validations/analysis.schema";
 import { AnalysisResponse } from "@/types/analysis.types";
+import { handleApiError, validateAuth } from "@/lib/errors/error-handler";
+import { ApiErrors } from "@/lib/errors/api-error";
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,32 +14,21 @@ export async function POST(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json<AnalysisResponse>(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    validateAuth(user);
 
     const body = await request.json();
     const validation = analysisRequestSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json<AnalysisResponse>(
-        { error: validation.error.issues[0].message },
-        { status: 400 }
-      );
+      throw validation.error;
     }
 
     const { requestId, requestText } = validation.data;
 
     // Verify request ownership
-    const productRequest = await RequestService.getRequest(user.id, requestId);
+    const productRequest = await RequestService.getRequest(user!.id, requestId);
     if (!productRequest) {
-      return NextResponse.json<AnalysisResponse>(
-        { error: "Request not found or access denied" },
-        { status: 404 }
-      );
+      throw ApiErrors.NOT_FOUND('Request');
     }
 
     // Use description from database instead of client input for security
@@ -54,10 +45,6 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Analyze request error:", error);
-    return NextResponse.json<AnalysisResponse>(
-      { error: "Unable to analyze request" },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }
