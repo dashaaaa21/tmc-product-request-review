@@ -4,7 +4,6 @@ import { RequestService } from "@/lib/services/request.service";
 import { ApiResponse, ProductRequest } from "@/types/request.types";
 import { createRequestSchema } from "@/lib/validations/request.schema";
 import { handleApiError, validateAuth } from "@/lib/errors/error-handler";
-import { ApiErrors } from "@/lib/errors/api-error";
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,7 +38,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
     const {

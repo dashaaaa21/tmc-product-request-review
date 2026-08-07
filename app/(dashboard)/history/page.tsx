@@ -39,7 +39,7 @@ export default function HistoryPage() {
 
   // Filter and search requests
   const filteredRequests = useMemo(() => {
-    let filtered = requests.filter((request) => {
+    const filtered = requests.filter((request) => {
       // Search filter
       const matchesSearch =
         searchQuery === "" ||
