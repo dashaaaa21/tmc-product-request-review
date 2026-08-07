@@ -1,5 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { ProductRequest } from "@/types/request.types";
 import { useRouter } from "next/navigation";
 
@@ -23,58 +21,54 @@ export function RequestHistoryCard({ request }: RequestHistoryCardProps) {
 
   // Status badge color
   const statusColors = {
-    pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200",
-    approved: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200",
-    rejected: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200",
-    implemented: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200",
+    pending: "bg-orange-100 text-orange-700 border-orange-200",
+    approved: "bg-lime-100 text-lime-700 border-lime-300",
+    rejected: "bg-red-100 text-red-700 border-red-200",
+    implemented: "bg-blue-100 text-blue-700 border-blue-200",
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <CardTitle className="text-xl">{request.title}</CardTitle>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Created: {formattedDate}
-            </p>
-          </div>
-          <span
-            className={`px-3 py-1 rounded-full text-sm font-medium ${
-              statusColors[request.status]
-            }`}
-          >
-            {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-          </span>
+    <div className="border-2 border-zinc-200 rounded-3xl p-6 bg-white hover:border-lime-400 transition-all shadow-sm">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex-1">
+          <h3 className="text-2xl font-black italic text-black mb-1">{request.title}</h3>
+          <p className="text-sm text-zinc-500">Created: {formattedDate}</p>
         </div>
-      </CardHeader>
-      <CardContent>
-        <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-2">
-          {request.description}
-        </p>
-        <div className="flex items-center gap-4 mb-4 text-sm">
-          <span className="text-gray-600 dark:text-gray-400">
-            Category:{" "}
-            <span className="font-medium text-gray-900 dark:text-gray-100">
-              {request.category}
-            </span>
-          </span>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => router.push(`/requests/${request.id}/review`)}
-          >
-            Review
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => router.push(`/requests/${request.id}/brief`)}
-          >
-            Product Brief
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+        <span
+          className={`px-5 py-2.5 rounded-full text-base font-bold border-2 ${statusColors[request.status]}`}
+        >
+          {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+        </span>
+      </div>
+      
+      <p className="text-zinc-700 mb-4 line-clamp-2">
+        {request.description}
+      </p>
+      
+      <div className="text-sm text-zinc-600 mb-6">
+        Category: <span className="font-bold text-black">{request.category}</span>
+      </div>
+
+      <div className="flex gap-2">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(`/requests/${request.id}/review`);
+          }}
+          className="flex-1 px-4 py-2 bg-zinc-800 text-white rounded-full font-bold text-sm border-2 border-zinc-800 hover:bg-zinc-700 transition-colors"
+        >
+          View Review →
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(`/requests/${request.id}/brief`);
+          }}
+          className="flex-1 px-4 py-2 bg-white text-black rounded-full font-bold text-sm border-2 border-zinc-200 hover:border-lime-400 transition-colors"
+        >
+          Product Brief
+        </button>
+      </div>
+    </div>
   );
 }

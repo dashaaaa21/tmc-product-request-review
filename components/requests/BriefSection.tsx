@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BriefResult } from "@/types/brief.types";
 
 interface BriefSectionProps {
@@ -10,119 +9,119 @@ export function BriefSection({ brief }: BriefSectionProps) {
   return (
     <div className="space-y-6">
       {/* Product Overview */}
-      <Card>
-        <CardHeader className="bg-blue-50 dark:bg-blue-900/20">
-          <CardTitle className="text-blue-800 dark:text-blue-200">
+      <div className="border-2 border-blue-200 rounded-3xl overflow-hidden bg-white shadow-sm">
+        <div className="bg-blue-50 px-6 py-4 border-b-2 border-blue-200">
+          <h3 className="text-xl font-black italic text-blue-700">
             Product Overview
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+          </h3>
+        </div>
+        <div className="p-6">
+          <p className="text-zinc-700 leading-relaxed">
             {brief.productOverview}
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Confirmed Requirements */}
-      <Card>
-        <CardHeader className="bg-green-50 dark:bg-green-900/20">
-          <CardTitle className="text-green-800 dark:text-green-200">
+      <div className="border-2 border-lime-200 rounded-3xl overflow-hidden bg-white shadow-sm">
+        <div className="bg-lime-50 px-6 py-4 border-b-2 border-lime-200">
+          <h3 className="text-xl font-black italic text-lime-700">
             Confirmed Requirements
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
+          </h3>
+        </div>
+        <div className="p-6">
           {brief.confirmedRequirements.length > 0 ? (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {brief.confirmedRequirements.map((req, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <span className="text-green-600 dark:text-green-400 mt-1">
+                <li key={index} className="flex items-start gap-3">
+                  <span className="text-lime-600 text-lg font-bold mt-0.5">
                     ✓
                   </span>
-                  <span className="text-gray-700 dark:text-gray-300">
+                  <span className="text-zinc-700 leading-relaxed">
                     {req}
                   </span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-500 dark:text-gray-400 italic">
+            <p className="text-zinc-500 italic">
               No confirmed requirements.
             </p>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Assumptions */}
-      <Card>
-        <CardHeader className="bg-purple-50 dark:bg-purple-900/20">
-          <CardTitle className="text-purple-800 dark:text-purple-200">
+      <div className="border-2 border-purple-200 rounded-3xl overflow-hidden bg-white shadow-sm">
+        <div className="bg-purple-50 px-6 py-4 border-b-2 border-purple-200">
+          <h3 className="text-xl font-black italic text-purple-700">
             Assumptions
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
+          </h3>
+        </div>
+        <div className="p-6">
           {brief.assumptions.length > 0 ? (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {brief.assumptions.map((assumption, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <span className="text-purple-600 dark:text-purple-400 mt-1">
+                <li key={index} className="flex items-start gap-3">
+                  <span className="text-purple-600 text-lg font-bold mt-0.5">
                     •
                   </span>
-                  <span className="text-gray-700 dark:text-gray-300">
+                  <span className="text-zinc-700 leading-relaxed">
                     {assumption}
                   </span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-500 dark:text-gray-400 italic">
+            <p className="text-zinc-500 italic">
               No assumptions made.
             </p>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Open Questions */}
-      <Card>
-        <CardHeader className="bg-yellow-50 dark:bg-yellow-900/20">
-          <CardTitle className="text-yellow-800 dark:text-yellow-200">
+      <div className="border-2 border-orange-200 rounded-3xl overflow-hidden bg-white shadow-sm">
+        <div className="bg-orange-50 px-6 py-4 border-b-2 border-orange-200">
+          <h3 className="text-xl font-black italic text-orange-700">
             Open Questions
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
+          </h3>
+        </div>
+        <div className="p-6">
           {brief.openQuestions.length > 0 ? (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {brief.openQuestions.map((question, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <span className="text-yellow-600 dark:text-yellow-400 mt-1">
+                <li key={index} className="flex items-start gap-3">
+                  <span className="text-orange-600 text-lg font-bold mt-0.5">
                     ?
                   </span>
-                  <span className="text-gray-700 dark:text-gray-300">
+                  <span className="text-zinc-700 leading-relaxed">
                     {question}
                   </span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-500 dark:text-gray-400 italic">
+            <p className="text-zinc-500 italic">
               No open questions.
             </p>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Procurement Summary */}
-      <Card>
-        <CardHeader className="bg-gray-50 dark:bg-gray-700">
-          <CardTitle className="text-gray-800 dark:text-gray-200">
+      <div className="border-2 border-zinc-200 rounded-3xl overflow-hidden bg-white shadow-sm">
+        <div className="bg-zinc-50 px-6 py-4 border-b-2 border-zinc-200">
+          <h3 className="text-xl font-black italic text-zinc-700">
             Procurement Summary
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+          </h3>
+        </div>
+        <div className="p-6">
+          <p className="text-zinc-700 leading-relaxed whitespace-pre-wrap">
             {brief.procurementSummary}
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
