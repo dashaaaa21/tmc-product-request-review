@@ -60,12 +60,10 @@ export class AnalysisService {
       // Parse and validate OpenAI response with Zod
       try {
         const parsedContent = JSON.parse(content);
-        console.log("Parsed AI response:", JSON.stringify(parsedContent, null, 2));
         const validatedResult = analysisResultSchema.parse(parsedContent);
         return validatedResult;
       } catch (parseError) {
-        console.error("AI response parsing error:", parseError);
-        console.error("Raw AI response:", content);
+        console.error("AI response validation failed");
         throw new ApiError(
           "Invalid AI response format. Please try again.",
           500,

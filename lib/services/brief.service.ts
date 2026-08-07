@@ -69,12 +69,10 @@ export class BriefService {
       // Parse and validate OpenAI response with Zod
       try {
         const parsedContent = JSON.parse(content);
-        console.log("Parsed brief AI response:", JSON.stringify(parsedContent, null, 2));
         const validatedResult = briefResultSchema.parse(parsedContent);
         return validatedResult;
       } catch (parseError) {
-        console.error("Brief AI response parsing error:", parseError);
-        console.error("Raw brief AI response:", content);
+        console.error("Brief validation failed");
         throw new ApiError(
           "Invalid AI response format. Please try again.",
           500,
