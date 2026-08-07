@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { BriefService } from "@/lib/services/brief.service";
 import { AnalysisService } from "@/lib/services/analysis.service";
-import { RequestService } from "@/lib/services/request.service";
 import { BriefResponse } from "@/types/brief.types";
 import { createBriefSchema } from "@/lib/validations/brief.schema";
+import { handleApiError, validateAuth } from "@/lib/errors/error-handler";
+import { checkRateLimit, RATE_LIMITS } from "@/lib/middleware/rate-limit";
+import { verifyRequestOwnership } from "@/lib/middleware/ownership";
+import { ApiError } from "@/lib/errors/api-error";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,10 +16,19 @@ export async function POST(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json<BriefResponse>(
-        { error: "Unauthorized" },
-        { status: 401 }
+    validateAuth(user);
+
+    // Rate limiting for AI generation
+    const rateLimitResult = checkRateLimit(
+      `brief:${user!.id}`,
+      RATE_LIMITS.AI_GENERATION
+    );
+
+    if (!rateLimitResult.allowed) {
+      throw new ApiError(
+        `Rate limit exceeded. Try again in ${Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)} seconds.`,
+        429,
+        "RATE_LIMIT_EXCEEDED"
       );
     }
 
@@ -25,33 +37,37 @@ export async function POST(request: NextRequest) {
     const validation = createBriefSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json<BriefResponse>(
-        { error: validation.error.issues[0].message },
-        { status: 400 }
-      );
+      throw validation.error;
     }
 
     const { requestId } = validation.data;
 
-    // Get request
-    const productRequest = await RequestService.getRequest(user.id, requestId);
+    // Verify request ownership (prevents access to other users' data)
+    await verifyRequestOwnership(user!.id, requestId);
+
+    // Get request data from database
+    const { data: productRequest } = await supabase
+      .from("requests")
+      .select("description")
+      .eq("id", requestId)
+      .eq("user_id", user!.id)
+      .single();
+
     if (!productRequest) {
-      return NextResponse.json<BriefResponse>(
-        { error: "Request not found or access denied" },
-        { status: 404 }
-      );
+      throw new ApiError("Request not found", 404, "NOT_FOUND");
     }
 
     // Get analysis
-    const analysis = await AnalysisService.getAnalysis(requestId, user.id);
+    const analysis = await AnalysisService.getAnalysis(requestId, user!.id);
     if (!analysis) {
-      return NextResponse.json<BriefResponse>(
-        { error: "Analysis not found. Please analyze the request first." },
-        { status: 404 }
+      throw new ApiError(
+        "Analysis not found. Please analyze the request first.",
+        404,
+        "NOT_FOUND"
       );
     }
 
-    // Generate brief using AI
+    // Generate brief using AI (using database data only)
     const brief = await BriefService.generateBrief(
       productRequest.description,
       analysis
@@ -60,12 +76,18 @@ export async function POST(request: NextRequest) {
     // Save brief and update status
     await BriefService.save(requestId, brief);
 
-    return NextResponse.json<BriefResponse>({ data: brief }, { status: 200 });
-  } catch (error) {
-    console.error("Generate brief error:", error);
-    return NextResponse.json<BriefResponse>(
-      { error: "Unable to generate brief" },
-      { status: 500 }
+    // Add rate limit headers
+    const response = NextResponse.json<BriefResponse>(
+      { data: brief },
+      { status: 200 }
     );
+    
+    response.headers.set("X-RateLimit-Limit", RATE_LIMITS.AI_GENERATION.maxRequests.toString());
+    response.headers.set("X-RateLimit-Remaining", rateLimitResult.remaining.toString());
+    response.headers.set("X-RateLimit-Reset", rateLimitResult.resetTime.toString());
+
+    return response;
+  } catch (error) {
+    return handleApiError(error);
   }
 }
