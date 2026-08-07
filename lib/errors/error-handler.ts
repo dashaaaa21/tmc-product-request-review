@@ -23,12 +23,13 @@ export function handleApiError(error: unknown): NextResponse<ApiResponse> {
 
   // Handle Zod validation errors
   if (error instanceof ZodError) {
-    const firstError = error.errors[0];
+    const issues = error.issues;
+    const firstError = issues[0];
     return NextResponse.json<ApiResponse>(
       { 
-        error: firstError.message,
+        error: firstError?.message || 'Validation failed',
         code: 'VALIDATION_ERROR',
-        details: error.errors
+        details: issues
       },
       { status: 400 }
     );
@@ -102,7 +103,7 @@ export function handleApiError(error: unknown): NextResponse<ApiResponse> {
 /**
  * Validate authentication
  */
-export function validateAuth(user: any): void {
+export function validateAuth(user: unknown): void {
   if (!user) {
     throw new ApiError('Authentication required', 401, 'UNAUTHORIZED');
   }

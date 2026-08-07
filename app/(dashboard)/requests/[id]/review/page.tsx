@@ -61,7 +61,7 @@ export default function ReviewPage() {
         } else {
           setError("Could not generate analysis automatically. Please try again.");
         }
-      } catch (err) {
+      } catch {
         setError("Failed to generate analysis automatically.");
       }
     }

@@ -16,33 +16,33 @@ export default function DashboardPage() {
   });
 
   useEffect(() => {
-    fetchRecentRequests();
-  }, []);
+    const loadData = async () => {
+      try {
+        const response = await fetch("/api/requests");
+        const data = await response.json();
 
-  async function fetchRecentRequests() {
-    try {
-      const response = await fetch("/api/requests");
-      const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to fetch requests");
+        }
 
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch requests");
+        const allRequests = data.data || [];
+        
+        setStats({
+          total: allRequests.length,
+          pending: allRequests.filter((r: ProductRequest) => r.status === "pending").length,
+          approved: allRequests.filter((r: ProductRequest) => r.status === "approved").length,
+        });
+
+        setRequests(allRequests.slice(0, 3));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load data");
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const allRequests = data.data || [];
-      
-      setStats({
-        total: allRequests.length,
-        pending: allRequests.filter((r: ProductRequest) => r.status === "pending").length,
-        approved: allRequests.filter((r: ProductRequest) => r.status === "approved").length,
-      });
-
-      setRequests(allRequests.slice(0, 3));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load data");
-    } finally {
-      setLoading(false);
-    }
-  }
+    loadData();
+  }, []);
 
   if (loading) {
     return (
