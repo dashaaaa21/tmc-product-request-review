@@ -4,8 +4,32 @@ interface ReviewSectionProps {
   analysis: AnalysisResult;
 }
 
+// Safe array access helper
+function safeArray<T>(arr: T[] | undefined | null): T[] {
+  return Array.isArray(arr) ? arr : [];
+}
+
+// Safe string access helper
+function safeString(str: string | undefined | null, fallback: string = ""): string {
+  return typeof str === "string" ? str : fallback;
+}
+
 // Display AI analysis results in 4 sections
 export function ReviewSection({ analysis }: ReviewSectionProps) {
+  // Validate analysis data
+  if (!analysis) {
+    return (
+      <div className="border-2 border-red-200 rounded-3xl p-8 bg-red-50 text-center">
+        <p className="text-red-600 font-medium">Analysis data is invalid or missing.</p>
+      </div>
+    );
+  }
+
+  const facts = safeArray(analysis.facts);
+  const missing = safeArray(analysis.missing);
+  const contradictions = safeArray(analysis.contradictions);
+  const followUpQuestions = safeArray(analysis.followUpQuestions);
+
   return (
     <div className="space-y-6">
       {/* Facts - what's clearly stated */}
@@ -16,15 +40,15 @@ export function ReviewSection({ analysis }: ReviewSectionProps) {
           </h3>
         </div>
         <div className="p-6">
-          {analysis.facts.length > 0 ? (
+          {facts.length > 0 ? (
             <ul className="space-y-3">
-              {analysis.facts.map((fact, index) => (
+              {facts.map((fact, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <span className="text-lime-600 text-lg font-bold mt-0.5">
                     ✓
                   </span>
                   <span className="text-zinc-700 leading-relaxed">
-                    {fact}
+                    {safeString(fact, "Invalid fact")}
                   </span>
                 </li>
               ))}
@@ -45,15 +69,15 @@ export function ReviewSection({ analysis }: ReviewSectionProps) {
           </h3>
         </div>
         <div className="p-6">
-          {analysis.missing.length > 0 ? (
+          {missing.length > 0 ? (
             <ul className="space-y-3">
-              {analysis.missing.map((item, index) => (
+              {missing.map((item, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <span className="text-orange-600 text-lg font-bold mt-0.5">
                     •
                   </span>
                   <span className="text-zinc-700 leading-relaxed">
-                    {item}
+                    {safeString(item, "Invalid missing item")}
                   </span>
                 </li>
               ))}
@@ -74,13 +98,13 @@ export function ReviewSection({ analysis }: ReviewSectionProps) {
           </h3>
         </div>
         <div className="p-6">
-          {analysis.contradictions.length > 0 ? (
+          {contradictions.length > 0 ? (
             <ul className="space-y-3">
-              {analysis.contradictions.map((contradiction, index) => (
+              {contradictions.map((contradiction, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <span className="text-red-600 text-lg font-bold mt-0.5">•</span>
                   <span className="text-zinc-700 leading-relaxed">
-                    {contradiction}
+                    {safeString(contradiction, "Invalid contradiction")}
                   </span>
                 </li>
               ))}
@@ -101,15 +125,15 @@ export function ReviewSection({ analysis }: ReviewSectionProps) {
           </h3>
         </div>
         <div className="p-6">
-          {analysis.followUpQuestions.length > 0 ? (
+          {followUpQuestions.length > 0 ? (
             <ul className="space-y-3">
-              {analysis.followUpQuestions.map((question, index) => (
+              {followUpQuestions.map((question, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <span className="text-blue-600 text-lg font-bold mt-0.5">
                     ?
                   </span>
                   <span className="text-zinc-700 leading-relaxed">
-                    {question}
+                    {safeString(question, "Invalid question")}
                   </span>
                 </li>
               ))}
