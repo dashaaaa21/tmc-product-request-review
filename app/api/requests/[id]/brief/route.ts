@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { BriefService } from "@/lib/services/brief.service";
-import { RequestService } from "@/lib/services/request.service";
+import { handleApiError, validateAuth } from "@/lib/errors/error-handler";
+import { verifyRequestOwnership } from "@/lib/middleware/ownership";
 
 // Get brief for a specific request
 export async function GET(
@@ -14,15 +15,22 @@ export async function GET(
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    validateAuth(user);
 
     const { id } = await params;
 
-    // Get request
-    const productRequest = await RequestService.getRequest(user.id, id);
-    if (!productRequest) {
+    // Verify ownership before fetching data
+    await verifyRequestOwnership(user!.id, id);
+
+    // Get request data
+    const { data: productRequest, error: requestError } = await supabase
+      .from("requests")
+      .select("*")
+      .eq("id", id)
+      .eq("user_id", user!.id) // Double-check ownership
+      .single();
+
+    if (requestError || !productRequest) {
       return NextResponse.json(
         { error: "Request not found or access denied" },
         { status: 404 }
@@ -30,7 +38,7 @@ export async function GET(
     }
 
     // Get brief
-    const brief = await BriefService.getBrief(id, user.id);
+    const brief = await BriefService.getBrief(id, user!.id);
 
     return NextResponse.json(
       {
@@ -42,10 +50,6 @@ export async function GET(
       { status: 200 }
     );
   } catch (error) {
-    console.error("Fetch brief error:", error);
-    return NextResponse.json(
-      { error: "Unable to fetch brief" },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }

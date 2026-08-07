@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { handleApiError, validateAuth } from "@/lib/errors/error-handler";
+import { verifyRequestOwnership } from "@/lib/middleware/ownership";
 
 // Get analysis for a specific request
 export async function GET(
@@ -12,18 +14,19 @@ export async function GET(
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    validateAuth(user);
 
     const { id } = await params;
 
-    // Check user owns this request
+    // Verify ownership before fetching data
+    await verifyRequestOwnership(user!.id, id);
+
+    // Fetch request data
     const { data: productRequest, error: requestError } = await supabase
       .from("requests")
       .select("*")
       .eq("id", id)
-      .eq("user_id", user.id)
+      .eq("user_id", user!.id) // Double-check ownership
       .single();
 
     if (requestError || !productRequest) {
@@ -59,10 +62,6 @@ export async function GET(
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error fetching analysis:", error);
-    return NextResponse.json(
-      { error: "Unable to fetch analysis" },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }
