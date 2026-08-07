@@ -125,10 +125,20 @@ CREATE TRIGGER audit_requests_changes
 -- ADD UNIQUE CONSTRAINT
 -- =============================================
 
--- Ensure only one analysis per request at a time
--- (Users can create new analysis, but old ones remain for history)
--- This is optional - remove if you want multiple analyses per request
+-- First, remove duplicate briefs (keep only the latest one for each request)
+-- This is safe because we're keeping the most recent brief
+DELETE FROM briefs
+WHERE id IN (
+  SELECT id
+  FROM (
+    SELECT id, 
+           ROW_NUMBER() OVER (PARTITION BY request_id ORDER BY created_at DESC) as rn
+    FROM briefs
+  ) t
+  WHERE rn > 1
+);
 
+-- Now we can safely add the unique constraint
 -- Ensure only one brief per request
 CREATE UNIQUE INDEX IF NOT EXISTS idx_briefs_request_id_unique 
   ON briefs(request_id);
