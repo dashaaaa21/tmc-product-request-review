@@ -100,9 +100,9 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center text-sm text-zinc-600">
-            <p className="font-medium">Demo accounts:</p>
+            <p className="font-medium">Demo accounts available</p>
             <p className="mt-1">alice@tmc.nl / bob@tmc.nl</p>
-            <p className="text-xs mt-1 text-zinc-500">Password: demo1234</p>
+            <p className="text-xs mt-1 text-zinc-500">See SETUP.md for credentials</p>
           </div>
         </div>
       </div>

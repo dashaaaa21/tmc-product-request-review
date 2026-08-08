@@ -85,6 +85,11 @@ export default function ReviewPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        // If brief already exists, redirect to it
+        if (response.status === 409) {
+          router.push(`/requests/${requestId}/brief`);
+          return;
+        }
         throw new Error(data.error || "Failed to generate brief");
       }
 
