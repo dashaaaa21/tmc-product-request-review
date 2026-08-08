@@ -10,9 +10,16 @@ import { briefResultSchema } from "@/lib/validations/brief.schema";
 import { ApiError } from "@/lib/errors/api-error";
 import { handleSupabaseError, isSupabaseError } from "@/lib/errors/supabase-error";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy initialization to avoid build-time errors
+let openaiInstance: OpenAI | null = null;
+function getOpenAI() {
+  if (!openaiInstance) {
+    openaiInstance = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return openaiInstance;
+}
 
 /**
  * BriefService handles brief generation and database operations
@@ -45,6 +52,7 @@ export class BriefService {
         throw new ApiError("Analysis is required to generate brief", 400, "VALIDATION_ERROR");
       }
 
+      const openai = getOpenAI();
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [

@@ -9,9 +9,16 @@ import { ApiError } from "@/lib/errors/api-error";
 import { handleSupabaseError, isSupabaseError } from "@/lib/errors/supabase-error";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy initialization to avoid build-time errors
+let openaiInstance: OpenAI | null = null;
+function getOpenAI() {
+  if (!openaiInstance) {
+    openaiInstance = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return openaiInstance;
+}
 
 /**
  * AnalysisService handles AI analysis operations and database interactions
@@ -36,6 +43,7 @@ export class AnalysisService {
         throw new ApiError("Request text cannot be empty", 400, "VALIDATION_ERROR");
       }
 
+      const openai = getOpenAI();
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
