@@ -67,6 +67,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if brief already exists
+    const existingBrief = await BriefService.getBrief(requestId, user!.id);
+    if (existingBrief) {
+      throw new ApiError(
+        "Brief already exists for this request. Please view the existing brief.",
+        409,
+        "BRIEF_ALREADY_EXISTS"
+      );
+    }
+
     // Generate brief using AI (using database data only)
     const brief = await BriefService.generateBrief(
       productRequest.description,
