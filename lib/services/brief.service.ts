@@ -15,7 +15,7 @@ let openaiInstance: OpenAI | null = null;
 function getOpenAI() {
   if (!openaiInstance) {
     openaiInstance = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
+      apiKey: process.env.OPENAI_API_KEY || "dummy-key-for-build",
     });
   }
   return openaiInstance;
