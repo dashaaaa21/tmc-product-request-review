@@ -36,14 +36,13 @@ We need some pens and notebooks.
 ## 3. Contradictory Request
 
 **Input:**
-10 high-performance laptops with 32GB RAM, i9 CPU and 1TB SSD.
-Budget: €500 per laptop. Delivery: tomorrow.
+We need 1000 premium metal pens with engraved company logo. High-quality stainless steel construction with luxury gift box packaging. Also, they should be cheap plastic pens. Budget: €2 per pen including packaging.
+
 
 **Expected result:**
-- Requirements are identified
-- Budget/specification contradiction is detected
-- Unrealistic delivery time is highlighted
-- Follow-up questions are generated
+- Material: “premium metal” vs. “cheap plastic”
+- Quality: “high-quality stainless steel” vs. “cheap”
+- Budget: €2 per pen vs. luxury metal pens (typically €15–30 per pen)
 
 **Result:** Passed 
 
