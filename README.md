@@ -7,8 +7,8 @@ Built an internal website for reviewing product requests. A TMC employee can log
 [https://tmc-product-request-review-efo6zkccs-dashas-projects-fa234119.vercel.app](https://tmc-product-request-review-bu8k-5i6d21tvx.vercel.app/login)
 
 **Test accounts:**
-- `alice@tmc.nl` / `demo1234`
-- `bob@tmc.nl` / `demo1234`
+- `alice@tmc.nl` / - Password: _(provided separately for security)_
+- `bob@tmc.nl` / - Password: _(provided separately for security)_
 
 ## Quick Start
 
