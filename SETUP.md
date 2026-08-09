@@ -1,20 +1,16 @@
 # Setup Instructions
 
-## Live Demo
-
-🚀 **Production URL**: https://tmc-product-request-review-efo6zkccs-dashas-projects-fa234119.vercel.app
-
-## Demo Credentials
-
 For testing purposes, two demo accounts are available:
 
 **Account 1:**
 - Email: `alice@tmc.nl`
-- Password: `demo1234`
+- Password: _(provided separately for security)_
 
 **Account 2:**
 - Email: `bob@tmc.nl`  
-- Password: `demo1234`
+- Password: _(provided separately for security)_
+
+> **Note:** As a security best practice, demo passwords are not stored in the repository. They will be provided to reviewers through a secure channel.
 
 ## Important Notes
 
@@ -37,4 +33,4 @@ npm install
 npm run dev
 ```
 
-Visit `http://localhost:3000` and use the demo credentials above.
+Visit `http://localhost:3000` and use the demo credentials provided.
