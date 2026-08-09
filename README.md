@@ -2,9 +2,9 @@
 
 Built an internal website for reviewing product requests. A TMC employee can log in, submit a merchandise request, review what is clear or missing, and save a Product Brief.
 
-## 🚀 Live Demo
+##  Live Demo
 
-https://tmc-product-request-review-efo6zkccs-dashas-projects-fa234119.vercel.app
+[https://tmc-product-request-review-efo6zkccs-dashas-projects-fa234119.vercel.app](https://tmc-product-request-review-bu8k-5i6d21tvx.vercel.app/login)
 
 **Test accounts:**
 - `alice@tmc.nl` / `demo1234`
